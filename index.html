@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#FBF7F0" />
+  <meta name="description" content="解码TA · 相处盲盒局 —— 抽一张卡，遇到一种人，做一个选择，然后看到「原来 TA 是这么想的」。" />
+  <title>解码TA · 相处盲盒局</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- ============ 数据异常兜底（data.js 未加载时显示） ============ -->
+    <section class="screen data-error" id="screen-error">
+      <div class="err-card">
+        <div class="err-mark" aria-hidden="true"></div>
+        <h2>盲盒好像还没拆开</h2>
+        <p id="errMessage">游戏数据没能成功加载。</p>
+        <p class="err-tip">请确认 <code>js/data.js</code> 已放入 js 目录，<br />然后刷新页面再试一次。</p>
+        <button class="btn btn-primary" id="btnRetry">重新加载</button>
+      </div>
+    </section>
+
+    <!-- ============ 主舞台：所有页面靠 .active 显隐切换 ============ -->
+    <main class="stage" id="stage">
+
+      <!-- 首页 -->
+      <section class="screen active" id="screen-home" data-screen="home">
+        <header class="hero">
+          <div class="hero-badge">相处盲盒局 · 单人版</div>
+          <h1 class="hero-title">解码<span>TA</span></h1>
+          <p class="hero-sub">抽一张卡，遇到一种人，做一个选择。<br />然后看到「原来 TA 是这么想的」。</p>
+          <div class="hero-deco" aria-hidden="true"><i></i><i></i><i></i></div>
+        </header>
+
+        <!-- 每日一抽：当天首次进入自动呈现 -->
+        <div class="daily-card" id="dailyCard" hidden>
+          <div class="daily-head">
+            <span class="daily-dot" aria-hidden="true"></span>
+            <span>今日人物卡</span>
+            <span class="daily-date" id="dailyDate"></span>
+          </div>
+          <div class="daily-body">
+            <div class="daily-name" id="dailyName"></div>
+            <div class="daily-intro" id="dailyIntro"></div>
+            <div class="daily-quote" id="dailyQuote"></div>
+          </div>
+        </div>
+
+        <div class="home-actions">
+          <button class="btn btn-primary btn-lg" id="btnStart">抽一张相处卡</button>
+          <div class="btn-row">
+            <button class="btn btn-ghost" id="btnManual">写我的使用说明书</button>
+            <button class="btn btn-ghost" id="btnCollection">我的收藏册</button>
+          </div>
+        </div>
+
+        <footer class="home-footer">这里练的是眼睛，生活需要你亲自上场。</footer>
+      </section>
+
+      <!-- 抽卡页 -->
+      <section class="screen" id="screen-draw" data-screen="draw">
+        <div class="topbar">
+          <button class="back-btn" data-back="home" aria-label="返回首页">返回</button>
+          <span class="topbar-title">抽卡中</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <p class="section-hint">正在为你抽取……</p>
+
+        <div class="draw-cards">
+          <!-- 人物卡：玩家遇到的人 -->
+          <div class="flip-wrap" id="personaFlip">
+            <div class="flip-card">
+              <div class="flip-face flip-back">
+                <div class="back-deco" aria-hidden="true"></div>
+                <span class="back-label">人物卡</span>
+              </div>
+              <div class="flip-face flip-front">
+                <div class="card-kicker">你遇到的人</div>
+                <div class="persona-name" id="drawPersonaName"></div>
+                <div class="tag-row" id="drawPersonaTags"></div>
+                <p class="persona-intro" id="drawPersonaIntro"></p>
+                <div class="tone-chip" id="drawPersonaTone"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 情境卡：玩家与对方之间发生的冲突 -->
+          <div class="flip-wrap" id="situationFlip">
+            <div class="flip-card">
+              <div class="flip-face flip-back">
+                <div class="back-deco" aria-hidden="true"></div>
+                <span class="back-label">情境卡</span>
+              </div>
+              <div class="flip-face flip-front">
+                <div class="card-kicker">此刻的情境</div>
+                <div class="sit-cat" id="drawSitCategory"></div>
+                <p class="sit-text" id="drawSitText"></p>
+                <div class="sit-index" id="drawSitIndex"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="btn-row reroll-row">
+          <button class="btn btn-ghost btn-reroll" id="btnRerollPersona" disabled>↻ 重抽人物卡</button>
+          <button class="btn btn-ghost btn-reroll" id="btnRerollSituation" disabled>↻ 重抽情境卡</button>
+        </div>
+        <p class="draw-note">人物卡 = 你遇到的人；情境里的「TA」就是这张人物卡。TA 的雷区与渴望，揭晓后才会显现。重抽的人物卡也会计入图鉴收集。</p>
+        <button class="btn btn-primary btn-lg" id="btnToChoice" disabled>就这一对，开始选择</button>
+      </section>
+
+      <!-- 三选一页 -->
+      <section class="screen" id="screen-choice" data-screen="choice">
+        <div class="topbar">
+          <button class="back-btn" data-back="draw">返回</button>
+          <span class="topbar-title">你的回应</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <div class="context-card">
+          <div class="ctx-row"><span class="ctx-key">遇到</span><span class="ctx-val" id="choicePersona"></span></div>
+          <div class="ctx-row"><span class="ctx-key">情境</span><span class="ctx-val" id="choiceSituation"></span></div>
+        </div>
+        <p class="section-hint" id="choiceHint">面对 TA，你会怎么说？</p>
+        <div class="option-list" id="optionList"></div>
+      </section>
+
+      <!-- 揭晓页：三段逐条展开 -->
+      <section class="screen" id="screen-reveal" data-screen="reveal">
+        <div class="topbar">
+          <button class="back-btn" data-back="choice">返回</button>
+          <span class="topbar-title">揭晓</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <div class="reveal-context" id="revealContext"></div>
+        <p class="section-hint">轻轻点开，看看 TA 心里在想什么</p>
+
+        <div class="reveal-segments">
+          <button type="button" class="seg seg-inner" data-seg="inner" aria-expanded="false">
+            <span class="seg-label"><span class="seg-num">01</span> TA 的内心 OS</span>
+            <span class="seg-body"></span>
+            <span class="seg-more">点我展开</span>
+          </button>
+          <button type="button" class="seg seg-observer" data-seg="observer" aria-expanded="false">
+            <span class="seg-label"><span class="seg-num">02</span> 旁观者视角</span>
+            <span class="seg-body"></span>
+            <span class="seg-more">点我展开</span>
+          </button>
+          <button type="button" class="seg seg-tip" data-seg="tip" aria-expanded="false">
+            <span class="seg-label"><span class="seg-num">03</span> 一句友好提示</span>
+            <span class="seg-body"></span>
+            <span class="seg-more">点我展开</span>
+          </button>
+        </div>
+
+        <button class="btn btn-primary btn-lg" id="btnClaim" hidden>收下，获得顿悟卡</button>
+        <button class="btn btn-ghost btn-lg" id="btnTryOtherReveal" hidden>试试另外两个结局</button>
+      </section>
+
+      <!-- 顿悟卡页 -->
+      <section class="screen" id="screen-enlightenment" data-screen="enlightenment">
+        <div class="enlight-hero">
+          <div class="enlight-kicker">获得顿悟卡</div>
+          <div class="enlight-card" id="enlightCard">
+            <div class="enlight-quote" id="enlightKey"></div>
+            <div class="enlight-meta" id="enlightMeta"></div>
+            <div class="enlight-seal" aria-hidden="true">顿悟</div>
+          </div>
+        </div>
+        <div class="unlock-note" id="unlockNote"></div>
+        <div class="btn-col">
+          <button class="btn btn-primary btn-lg" id="btnShare">分享这张</button>
+          <button class="btn btn-ghost btn-lg" id="btnTryOther">试试另外两个结局</button>
+          <div class="btn-row">
+            <button class="btn btn-ghost" id="btnReplay">再来一局</button>
+            <button class="btn btn-ghost" id="btnHomeFromEnlight">回首页</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 写说明书：填写页 -->
+      <section class="screen" id="screen-manual" data-screen="manual">
+        <div class="topbar">
+          <button class="back-btn" data-back="home">返回</button>
+          <span class="topbar-title">我的使用说明书</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <p class="section-hint">把「怎么用好你」写清楚，发给重要的人。</p>
+        <form class="manual-form" id="manualForm">
+          <div id="manualFields"></div>
+          <button type="submit" class="btn btn-primary btn-lg">生成我的说明书</button>
+        </form>
+      </section>
+
+      <!-- 写说明书：图片预览页 -->
+      <section class="screen" id="screen-manual-preview" data-screen="manual-preview">
+        <div class="topbar">
+          <button class="back-btn" data-back="manual">返回修改</button>
+          <span class="topbar-title">预览</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <div class="preview-wrap"><img id="manualImage" alt="我的使用说明书" /></div>
+        <div class="btn-col">
+          <button class="btn btn-primary btn-lg" id="btnSaveManual">保存图片</button>
+          <button class="btn btn-ghost" id="btnManualAgain">再写一份</button>
+        </div>
+      </section>
+
+      <!-- 收藏册 -->
+      <section class="screen" id="screen-collection" data-screen="collection">
+        <div class="topbar">
+          <button class="back-btn" data-back="home">返回</button>
+          <span class="topbar-title">我的收藏册</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <div class="tabs" role="tablist" aria-label="收藏册分类">
+          <button type="button" class="tab active" data-tab="enlightenments" role="tab" aria-selected="true">顿悟卡</button>
+          <button type="button" class="tab" data-tab="achievements" role="tab" aria-selected="false">成就</button>
+          <button type="button" class="tab" data-tab="codex" role="tab" aria-selected="false">人物图鉴</button>
+        </div>
+        <button type="button" class="btn btn-ghost review-btn" id="btnViewManual">回看我的说明书</button>
+        <div class="tab-panels">
+          <div class="tab-panel active" id="panel-enlightenments" role="tabpanel"></div>
+          <div class="tab-panel" id="panel-achievements" role="tabpanel"></div>
+          <div class="tab-panel" id="panel-codex" role="tabpanel"></div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- 成就 / 提示浮层 -->
+    <div class="toast-area" id="toastArea" aria-live="polite"></div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
