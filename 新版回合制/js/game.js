@@ -810,6 +810,29 @@
     `;
   }
 
+  // 渲染独立成就图鉴：展示全部成就（含未解锁）
+  function renderAchievementsPage() {
+    const unlocked = loadAchievements();
+    const got = BATTLE_ACHIEVEMENTS.filter((a) => unlocked.includes(a.id)).length;
+    const total = BATTLE_ACHIEVEMENTS.length;
+    const summary = $('#achSummary');
+    if (summary) summary.textContent = `已解锁 ${got} / ${total}`;
+    const fill = $('#achProgressFill');
+    if (fill) fill.style.width = `${(got / total) * 100}%`;
+
+    const grid = $('#achGrid');
+    if (!grid) return;
+    grid.innerHTML = BATTLE_ACHIEVEMENTS.map((a) => {
+      const on = unlocked.includes(a.id);
+      return `<div class="ach-card ${on ? 'unlocked' : 'locked'}">
+        <div class="ach-icon" aria-hidden="true">${a.icon}</div>
+        <div class="ach-name">${a.name}</div>
+        <div class="ach-desc">${a.desc}</div>
+        <div class="ach-state">${on ? '✓ 已解锁' : '未解锁'}</div>
+      </div>`;
+    }).join('');
+  }
+
   /* ==========================================================
    * 十、投掷弹窗（BG3 式）
    * ========================================================== */
@@ -1235,6 +1258,11 @@
       renderCreate();
     });
 
+    $('#btnOpenAchievements').addEventListener('click', () => {
+      renderAchievementsPage();
+      showScreen('achievements');
+    });
+
     // 自建角色按钮：把第一个预设槽位（或新增）改为自建
     $('#btnAddCustom').addEventListener('click', () => {
       // 找到第一个非自建的槽位，改为自建；若全是自建则提示
@@ -1283,6 +1311,10 @@
       state.party = randomParty();
       showScreen('create');
       renderCreate();
+    });
+    $('#btnVictoryAchievements').addEventListener('click', () => {
+      renderAchievementsPage();
+      showScreen('achievements');
     });
     $('#btnVictoryHome').addEventListener('click', () => showScreen('home'));
   }

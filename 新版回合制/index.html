@@ -241,6 +241,7 @@
 
         <div class="home-actions">
           <button class="btn btn-primary btn-lg" id="btnEnterCreate">进入回合制闯关</button>
+          <button class="btn btn-ghost btn-lg" id="btnOpenAchievements">🏅 成就图鉴</button>
           <a class="btn btn-ghost btn-lg" href="../index.html">← 返回「解码TA」问答玩法</a>
           <p class="home-note">两种玩法相互独立：<br />「问答玩法」看 TA 内心 · 「回合制闯关」掷骰打 BOSS。</p>
         </div>
@@ -364,8 +365,23 @@
         <div class="victory-achievements" id="victoryAchievements"></div>
         <div class="btn-col">
           <button class="btn btn-primary btn-lg" id="btnReplay">再来一局</button>
+          <button class="btn btn-ghost" id="btnVictoryAchievements">🏅 查看全部成就</button>
           <button class="btn btn-ghost btn-lg" id="btnVictoryHome">回首页</button>
         </div>
+      </section>
+
+      <!-- ============ 成就图鉴页（独立收集入口） ============ -->
+      <section class="screen" id="screen-achievements" data-screen="achievements">
+        <div class="topbar">
+          <button class="back-btn" data-back="home" aria-label="返回首页">返回</button>
+          <span class="topbar-title">成就图鉴</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <p class="ach-intro">每一枚徽章，都是你和 TA 好好相处的一次胜利。</p>
+        <div class="ach-summary" id="achSummary">已解锁 0 / 10</div>
+        <div class="ach-progress" aria-hidden="true"><div id="achProgressFill"></div></div>
+        <div class="ach-grid" id="achGrid"></div>
+        <p class="ach-footnote">成就自动保存在本机浏览器中，换设备或清理缓存后不会同步。</p>
       </section>
 
     </main>
