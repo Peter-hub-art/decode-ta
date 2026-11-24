@@ -606,3 +606,71 @@ body::before {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
 }
+
+/* ============================================================
+   UI美化版 · 简笔画卡片增强（附加在原样式之后，不改动原规则）
+   ============================================================ */
+.art-c0 { color: #8E7CC3; }
+.art-c1 { color: #7FA8C9; }
+.art-c2 { color: #E0A3B4; }
+.art-c3 { color: #C9A86A; }
+.art-c4 { color: #7FB69A; }
+.art-c5 { color: #C08BA6; }
+
+/* 每日人物卡：左图右文 */
+.daily-body { display: flex; gap: 12px; align-items: center; }
+.daily-text { flex: 1; min-width: 0; }
+.daily-art {
+  flex: 0 0 62px; width: 62px; height: 62px; border-radius: 20px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(145deg, #fff, var(--purple-soft));
+  border: 1px solid var(--line); box-shadow: var(--shadow-sm);
+}
+.daily-art svg { width: 54px; height: 54px; }
+
+/* 抽卡页人物卡：头像 + 信息横排 */
+.persona-front { gap: 8px; }
+.persona-top { display: flex; gap: 12px; align-items: center; }
+.persona-art {
+  flex: 0 0 82px; width: 82px; height: 82px; border-radius: 26px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(150deg, #fff 0%, var(--purple-soft) 100%);
+  border: 1px solid var(--line); position: relative; overflow: hidden;
+}
+.persona-art::before {
+  content: ""; position: absolute; width: 60px; height: 60px; border-radius: 50%;
+  border: 1px dashed var(--tint-purple-35); top: -24px; right: -22px;
+}
+.persona-art svg { width: 70px; height: 70px; position: relative; }
+.persona-meta { flex: 1; min-width: 0; }
+.persona-meta .card-kicker { margin-bottom: 4px; }
+.persona-meta .tag-row { margin-top: 6px; }
+.persona-front .persona-intro { margin-top: 12px; flex: 0 0 auto; }
+
+/* 成就徽章：简笔画章面 */
+.ach-art {
+  flex: 0 0 46px; height: 46px; border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; background: linear-gradient(135deg, var(--gold) 0%, var(--pink) 100%);
+  border: 1px solid rgba(255,255,255,.55); box-shadow: 0 3px 10px rgba(201,168,106,.28);
+}
+.ach-art svg { width: 30px; height: 30px; }
+.ach-item.locked .ach-art {
+  background: var(--bg-soft); color: var(--ink-faint); border-color: var(--line); box-shadow: none;
+}
+
+/* 成就 toast 内的微型徽章 */
+.toast-ach { display: flex; align-items: center; gap: 10px; text-align: left; }
+.toast-ach .toast-ach-art { flex: 0 0 34px; height: 34px; color: #fff; }
+.toast-ach .toast-ach-art svg { width: 34px; height: 34px; }
+
+/* 人物图鉴：简笔头像 */
+.codex-card { display: flex; gap: 12px; align-items: flex-start; }
+.codex-art {
+  flex: 0 0 54px; width: 54px; height: 54px; border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(150deg, #fff, var(--purple-soft)); border: 1px solid var(--line);
+}
+.codex-art svg { width: 46px; height: 46px; }
+.codex-locked .codex-art { filter: grayscale(1); opacity: .45; }
+.codex-body { flex: 1; min-width: 0; }

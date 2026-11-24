@@ -1,0 +1,163 @@
+/* ============================================================
+   UI美化版 · 精简布局（覆盖此前附加样式）
+   目标：战斗战场与操作同屏；选人页用立绘卡片；攻击演出清晰可见
+   ============================================================ */
+
+/* ---------- 一、选人页：立绘角色卡 ---------- */
+.screen[data-screen="create"] .section-hint {
+  font-size: 11px; line-height: 1.5; margin: 6px 0 10px;
+}
+.slot-card {
+  display: flex; gap: 11px; align-items: flex-start;
+  padding: 10px; margin-bottom: 9px;
+}
+.slot-portrait {
+  flex: 0 0 70px; width: 70px; height: 86px; border-radius: 14px;
+  display: flex; align-items: flex-end; justify-content: center; overflow: hidden;
+  background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(212,175,106,.12));
+  border: 1px solid var(--line);
+}
+.slot-portrait svg { width: 100%; height: 100%; display: block; }
+.slot-main { flex: 1; min-width: 0; }
+.slot-main .slot-head { margin-bottom: 4px; }
+.slot-main .slot-title { font-size: 13px; }
+.slot-main .slot-title b { color: var(--gold-hi); }
+.slot-main .slot-random { padding: 4px 9px; font-size: 11px; }
+.slot-trait label { display: none; }
+.slot-trait select { padding: 5px 8px; font-size: 12px; }
+.slot-main .slot-intro { font-size: 11px; margin-bottom: 5px; line-height: 1.4; }
+.slot-main .slot-fixed { gap: 4px; }
+.slot-main .badge { font-size: 10px; padding: 2px 6px; }
+.slot-main .slot-skill-desc { font-size: 10px; margin-top: 5px; }
+.slot-main .slot-field { margin-bottom: 6px; }
+.slot-main .slot-field label { font-size: 10px; margin-bottom: 2px; }
+
+/* ---------- 二、战斗页：一屏装下战场与操作 ---------- */
+.screen[data-screen="battle"].active {
+  display: flex; flex-direction: column;
+  height: calc(100dvh - 24px); min-height: 0; overflow: hidden;
+}
+.screen[data-screen="battle"] .topbar { flex: 0 0 auto; min-height: 42px; padding: 8px 0; }
+.screen[data-screen="battle"] .turn-track { flex: 0 0 auto; margin: 2px 0 5px; font-size: 11px; }
+.screen[data-screen="battle"] .turn-step { padding: 4px 9px; }
+.screen[data-screen="battle"] .battle-scene {
+  flex: 1 1 auto; min-height: 185px; max-height: 300px; padding: 6px 10px;
+}
+.screen[data-screen="battle"] .scene-stage { min-height: 0; height: 100%; gap: 4px; }
+.screen[data-screen="battle"] .boss-float { height: 100px; }
+.screen[data-screen="battle"] .boss-art { width: 100px; height: 100px; }
+.screen[data-screen="battle"] .boss-plate { padding: 5px 8px; margin-top: 2px; }
+.screen[data-screen="battle"] .boss-name { font-size: 14px; }
+.screen[data-screen="battle"] .boss-desc { display: none; }
+.screen[data-screen="battle"] .boss-tags { margin-top: 1px; }
+.screen[data-screen="battle"] .boss-bars { margin-top: 3px; }
+.screen[data-screen="battle"] .boss-bars .bar { height: 8px; }
+.screen[data-screen="battle"] .boss-bars .bar-label { font-size: 10px; margin-bottom: 1px; }
+.screen[data-screen="battle"] .flame-row { margin: 3px 0 1px; }
+.screen[data-screen="battle"] .flame-row i { width: 7px; height: 9px; }
+.screen[data-screen="battle"] .boss-foot { margin-top: 3px; }
+.screen[data-screen="battle"] .boss-special { font-size: 9px; }
+.screen[data-screen="battle"] .dc-chip { padding: 2px 7px; font-size: 10px; }
+.screen[data-screen="battle"] .scene-party { flex: 0 0 38%; padding-bottom: 2px; }
+.screen[data-screen="battle"] .scene-member .sm-charge { font-size: 8px; }
+.screen[data-screen="battle"] .scene-log { display: none; }
+
+/* 队伍血量：一行细条 */
+.screen[data-screen="battle"] .party-hp-panel {
+  flex: 0 0 auto; margin-top: 6px; padding: 5px 10px;
+}
+.screen[data-screen="battle"] .party-hp-hint { display: none; }
+.screen[data-screen="battle"] .party-hp-panel .bar { height: 8px; }
+
+/* 结算面板：战报已由场景内文字承担，去掉大段重复文字 */
+.screen[data-screen="battle"] .result-panel { display: none !important; }
+
+/* 难题区：只留两行情境 + 鉴定 + 掷骰按钮 */
+.screen[data-screen="battle"] .check-zone { flex: 0 0 auto; margin-top: 6px; }
+.screen[data-screen="battle"] .active-hero {
+  padding: 4px 8px; margin-bottom: 5px; font-size: 11px;
+}
+.screen[data-screen="battle"] .ah-label { font-size: 10px; }
+.screen[data-screen="battle"] .ah-name { font-size: 13px; }
+.screen[data-screen="battle"] .relay-badge { font-size: 9px; padding: 1px 6px; }
+.screen[data-screen="battle"] .task-card { padding: 8px 10px; }
+.screen[data-screen="battle"] .task-story {
+  font-size: 12px; line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+}
+.screen[data-screen="battle"] .task-require { margin-top: 6px; }
+.screen[data-screen="battle"] .task-require-label { font-size: 10px; }
+.screen[data-screen="battle"] .btn-roll { min-height: 52px; margin-top: 8px; }
+
+/* 队伍栏：四个头像横排，一点即换人 */
+.screen[data-screen="battle"] .party-bar { flex: 0 0 auto; margin-top: 6px; }
+.screen[data-screen="battle"] .party-bar-title { display: none; }
+.screen[data-screen="battle"] .party-roster {
+  grid-template-columns: repeat(4, 1fr); gap: 5px;
+}
+.screen[data-screen="battle"] .member-card { padding: 5px 3px; }
+.screen[data-screen="battle"] .member-top { flex-direction: column; align-items: center; gap: 1px; }
+.screen[data-screen="battle"] .member-sprite svg { width: 32px; height: 36px; }
+.screen[data-screen="battle"] .member-name { font-size: 11px; text-align: center; }
+.screen[data-screen="battle"] .member-tags,
+.screen[data-screen="battle"] .member-skill { display: none; }
+.screen[data-screen="battle"] .member-active-tag { font-size: 9px; padding: 0 5px; }
+
+/* ---------- 三、攻击演出：谁出手 + 斩击 + 命中 ---------- */
+.fx-banner {
+  position: absolute; left: 50%; top: 30%; transform: translateX(-50%);
+  z-index: 12; padding: 6px 15px; border-radius: 999px;
+  background: rgba(10,7,20,.92); border: 1px solid var(--gold);
+  color: var(--gold-hi); font-size: 15px; font-weight: 800; white-space: nowrap;
+  text-shadow: 0 2px 8px #000; box-shadow: 0 6px 20px rgba(0,0,0,.5);
+  animation: bannerIn .95s var(--ease) forwards;
+}
+.fx-banner.attack { border-color: #ff9e61; color: #ffd8a8; font-size: 17px; }
+.fx-banner.hit { border-color: #ff7a6b; color: #ffb3b3; }
+.fx-banner.crit { border-color: var(--crit-hi); color: var(--crit-hi); font-size: 19px; }
+.fx-banner.miss { border-color: var(--ink-faint); color: var(--ink-soft); }
+.fx-banner.guard { border-color: var(--good); color: var(--good); }
+.fx-banner.danger { border-color: var(--fail); color: #ff9e92; font-size: 17px; }
+@keyframes bannerIn {
+  0%   { opacity: 0; transform: translateX(-50%) scale(.7); }
+  15%  { opacity: 1; transform: translateX(-50%) scale(1.08); }
+  68%  { opacity: 1; transform: translateX(-50%) scale(1); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-18px) scale(1); }
+}
+.fx-slash {
+  position: absolute; left: 22%; top: 18%; width: 0; height: 7px;
+  background: linear-gradient(90deg, transparent, #fff 40%, #ffd27a 72%, transparent);
+  transform: rotate(-32deg); transform-origin: left center;
+  z-index: 11; filter: drop-shadow(0 0 9px #ffd27a);
+  animation: slashIn .5s var(--ease) forwards;
+}
+.fx-slash.crit {
+  height: 11px;
+  background: linear-gradient(90deg, transparent, #fff 30%, #ff9e3d 68%, transparent);
+}
+@keyframes slashIn {
+  0%   { opacity: 0; width: 0; }
+  30%  { opacity: 1; width: 175px; }
+  100% { opacity: 0; width: 200px; }
+}
+/* 出手的小人冲得更明显 */
+.scene-member.attacking svg { animation: heroLungeBig .62s var(--ease); }
+@keyframes heroLungeBig {
+  0%,100% { transform: translateX(0) scale(1.05); }
+  30% { transform: translateX(-46px) scale(1.25) rotate(12deg); }
+  46% { transform: translateX(-52px) scale(1.2) rotate(-6deg); }
+}
+.scene-member.miss svg { animation: heroMissBig .6s var(--ease); }
+@keyframes heroMissBig {
+  0%,100% { transform: none; }
+  35% { transform: translateX(-40px) rotate(-10deg); opacity: .65; }
+}
+
+@media (max-width: 360px) {
+  .screen[data-screen="battle"] .battle-scene { min-height: 165px; }
+  .slot-portrait { flex-basis: 58px; width: 58px; height: 74px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-banner, .fx-slash { animation-duration: .01ms !important; }
+}

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no" />
+  <meta name="theme-color" content="#15111f" />
+  <meta name="description" content="解码TA · 回合制闯关 —— 骰子说了算的相处 BOSS 战。" />
+  <title>解码TA · 回合制闯关</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/ui-enhance.css" />
+  <link rel="stylesheet" href="css/ui-compact.css" />
+</head>
+<body>
+  <div class="app" id="app">
+
+    <!-- ============ 隐藏 SVG 精灵库（骰子 / BOSS / 队伍小人 / 梗表情） ============ -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+      <defs>
+        <!-- 正二十面体 d20 骰子（精确 icosahedron 正面投影，每面带数字） -->
+        <symbol id="d20" viewBox="0 0 200 200">
+          <g stroke-linejoin="round">
+            <!-- 最外圈暗面（nz≈0.33） -->
+            <polygon points="100,185 26,142 100,152" fill="#9a8457" stroke="#8f7a4e" stroke-width="1"/>
+            <polygon points="100,152 174,142 100,185" fill="#9a8457" stroke="#8f7a4e" stroke-width="1"/>
+            <polygon points="26,142 26,58 55,73" fill="#a9906a" stroke="#8f7a4e" stroke-width="1"/>
+            <polygon points="145,73 174,58 174,142" fill="#a9906a" stroke="#8f7a4e" stroke-width="1"/>
+            <polygon points="145,73 100,15 174,58" fill="#b9a67f" stroke="#9a8457" stroke-width="1"/>
+            <polygon points="100,15 55,73 26,58" fill="#b9a67f" stroke="#9a8457" stroke-width="1"/>
+            <!-- 中层环绕面（nz≈0.74-0.75） -->
+            <polygon points="145,73 174,142 100,152" fill="#c4b18c" stroke="#b09a68" stroke-width="1.2"/>
+            <polygon points="55,73 100,152 26,142" fill="#c4b18c" stroke="#b09a68" stroke-width="1.2"/>
+            <polygon points="145,73 55,73 100,15" fill="#d4c3a0" stroke="#c9a86a" stroke-width="1.2"/>
+            <!-- 中央上表面（正对前方 nz=1.0，最亮，放数字） -->
+            <polygon points="145,73 100,152 55,73" fill="#f4e9d3" stroke="#e0c185" stroke-width="2"/>
+          </g>
+        </symbol>
+
+        <!-- 像素 BOSS 立绘（16×16 网格，放大到 96×96） -->
+        <symbol id="boss-read" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <g>
+            <rect x="4" y="2" width="8" height="2" fill="#a78bda"/>
+            <rect x="2" y="3" width="2" height="6" fill="#7a67b3"/>
+            <rect x="12" y="3" width="2" height="6" fill="#7a67b3"/>
+            <rect x="4" y="4" width="8" height="4" fill="#a78bda"/>
+            <rect x="3" y="3" width="10" height="1" fill="#7a67b3"/>
+            <rect x="3" y="8" width="10" height="1" fill="#7a67b3"/>
+            <rect x="4" y="3" width="2" height="1" fill="#f4e9d3"/>
+            <rect x="10" y="3" width="2" height="1" fill="#f4e9d3"/>
+            <rect x="5" y="4" width="2" height="2" fill="#2a2440"/>
+            <rect x="9" y="4" width="2" height="2" fill="#2a2440"/>
+            <rect x="7" y="7" width="2" height="1" fill="#2a2440"/>
+            <rect x="4" y="9" width="8" height="3" fill="#7a67b3"/>
+            <rect x="5" y="10" width="6" height="1" fill="#3a3357"/>
+            <rect x="5" y="12" width="6" height="1" fill="#3a3357"/>
+            <rect x="6" y="11" width="4" height="1" fill="#7fe0d0"/>
+            <rect x="5" y="13" width="6" height="1" fill="#3a3357"/>
+          </g>
+        </symbol>
+
+        <symbol id="boss-blame" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <g>
+            <rect x="3" y="1" width="7" height="2" fill="#8a6a4a"/>
+            <rect x="2" y="2" width="9" height="2" fill="#8a6a4a"/>
+            <rect x="1" y="3" width="2" height="1" fill="#6b4f37"/>
+            <rect x="10" y="3" width="2" height="1" fill="#6b4f37"/>
+            <rect x="2" y="4" width="1" height="4" fill="#6b4f37"/>
+            <rect x="10" y="4" width="1" height="4" fill="#6b4f37"/>
+            <rect x="3" y="4" width="7" height="2" fill="#6e7b93"/>
+            <rect x="3" y="5" width="1" height="2" fill="#4a5568"/>
+            <rect x="9" y="5" width="1" height="2" fill="#4a5568"/>
+            <rect x="4" y="6" width="2" height="2" fill="#1e2230"/>
+            <rect x="7" y="6" width="2" height="2" fill="#1e2230"/>
+            <rect x="3" y="8" width="7" height="1" fill="#4a5568"/>
+            <rect x="4" y="9" width="6" height="3" fill="#6e7b93"/>
+            <rect x="3" y="10" width="1" height="1" fill="#4a5568"/>
+            <rect x="9" y="10" width="1" height="1" fill="#4a5568"/>
+            <rect x="4" y="12" width="6" height="2" fill="#4a5568"/>
+            <rect x="5" y="13" width="2" height="1" fill="#1e2230"/>
+            <rect x="8" y="13" width="2" height="1" fill="#1e2230"/>
+          </g>
+        </symbol>
+
+        <symbol id="boss-burnout" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <g>
+            <rect x="5" y="2" width="6" height="1" fill="#5a4e8a"/>
+            <rect x="3" y="3" width="10" height="3" fill="#5a4e8a"/>
+            <rect x="3" y="4" width="1" height="2" fill="#ffd9a0"/>
+            <rect x="12" y="4" width="1" height="2" fill="#ffd9a0"/>
+            <rect x="4" y="5" width="8" height="1" fill="#1a1526"/>
+            <rect x="5" y="7" width="6" height="1" fill="#1a1526"/>
+            <rect x="4" y="8" width="8" height="4" fill="#5a4e8a"/>
+            <rect x="5" y="8" width="6" height="3" fill="#8e7cc3" fill-opacity=".55"/>
+            <rect x="4" y="12" width="8" height="1" fill="#5a4e8a"/>
+            <rect x="5" y="13" width="2" height="1" fill="#5a4e8a"/>
+            <rect x="9" y="13" width="2" height="1" fill="#5a4e8a"/>
+          </g>
+        </symbol>
+
+        <!-- 像素队伍小人（16×16，四角色配色） -->
+        <symbol id="party-hero" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <g>
+            <rect x="6" y="1" width="4" height="2" fill="#8e7cc3"/>
+            <rect x="6" y="3" width="4" height="2" fill="#8e7cc3"/>
+            <rect x="5" y="3" width="1" height="2" fill="#efeaf9"/>
+            <rect x="10" y="3" width="1" height="2" fill="#efeaf9"/>
+            <rect x="7" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="9" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="5" y="5" width="6" height="4" fill="#8e7cc3"/>
+            <rect x="5" y="5" width="1" height="4" fill="#6f5fa6"/>
+            <rect x="10" y="5" width="1" height="4" fill="#6f5fa6"/>
+            <rect x="6" y="9" width="2" height="3" fill="#6f5fa6"/>
+            <rect x="8" y="9" width="2" height="3" fill="#6f5fa6"/>
+            <rect x="6" y="12" width="2" height="1" fill="#2a2440"/>
+            <rect x="8" y="12" width="2" height="1" fill="#2a2440"/>
+          </g>
+        </symbol>
+        <symbol id="party-blue" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <g>
+            <rect x="6" y="1" width="4" height="2" fill="#7fa8c9"/>
+            <rect x="6" y="3" width="4" height="2" fill="#7fa8c9"/>
+            <rect x="5" y="3" width="1" height="2" fill="#e8f1f7"/>
+            <rect x="10" y="3" width="1" height="2" fill="#e8f1f7"/>
+            <rect x="7" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="9" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="5" y="5" width="6" height="4" fill="#7fa8c9"/>
+            <rect x="5" y="5" width="1" height="4" fill="#5a82a6"/>
+            <rect x="10" y="5" width="1" height="4" fill="#5a82a6"/>
+            <rect x="6" y="9" width="2" height="3" fill="#5a82a6"/>
+            <rect x="8" y="9" width="2" height="3" fill="#5a82a6"/>
+            <rect x="6" y="12" width="2" height="1" fill="#2a2440"/>
+            <rect x="8" y="12" width="2" height="1" fill="#2a2440"/>
+          </g>
+        </symbol>
+        <symbol id="party-pink" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <g>
+            <rect x="6" y="1" width="4" height="2" fill="#e0a3b4"/>
+            <rect x="6" y="3" width="4" height="2" fill="#e0a3b4"/>
+            <rect x="5" y="3" width="1" height="2" fill="#fbecef"/>
+            <rect x="10" y="3" width="1" height="2" fill="#fbecef"/>
+            <rect x="7" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="9" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="5" y="5" width="6" height="4" fill="#e0a3b4"/>
+            <rect x="5" y="5" width="1" height="4" fill="#b4677c"/>
+            <rect x="10" y="5" width="1" height="4" fill="#b4677c"/>
+            <rect x="6" y="9" width="2" height="3" fill="#b4677c"/>
+            <rect x="8" y="9" width="2" height="3" fill="#b4677c"/>
+            <rect x="6" y="12" width="2" height="1" fill="#2a2440"/>
+            <rect x="8" y="12" width="2" height="1" fill="#2a2440"/>
+          </g>
+        </symbol>
+        <symbol id="party-orange" viewBox="0 0 16 16" shape-rendering="crispEdges">
+          <g>
+            <rect x="6" y="1" width="4" height="2" fill="#ff9e3d"/>
+            <rect x="6" y="3" width="4" height="2" fill="#ff9e3d"/>
+            <rect x="5" y="3" width="1" height="2" fill="#ffe3c2"/>
+            <rect x="10" y="3" width="1" height="2" fill="#ffe3c2"/>
+            <rect x="7" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="9" y="3" width="1" height="1" fill="#2a2440"/>
+            <rect x="5" y="5" width="6" height="4" fill="#ff9e3d"/>
+            <rect x="5" y="5" width="1" height="4" fill="#d97a24"/>
+            <rect x="10" y="5" width="1" height="4" fill="#d97a24"/>
+            <rect x="6" y="9" width="2" height="3" fill="#d97a24"/>
+            <rect x="8" y="9" width="2" height="3" fill="#d97a24"/>
+            <rect x="6" y="12" width="2" height="1" fill="#2a2440"/>
+            <rect x="8" y="12" width="2" height="1" fill="#2a2440"/>
+          </g>
+        </symbol>
+
+        <!-- 梗表情精灵（可爱 + 调侃） -->
+        <symbol id="emoji-shiba" viewBox="0 0 32 32">
+          <circle cx="16" cy="17" r="11" fill="#e8b04b"/>
+          <ellipse cx="16" cy="20" rx="6" ry="5" fill="#fffdf6"/>
+          <circle cx="12" cy="15" r="1.6" fill="#2a2440"/>
+          <circle cx="20" cy="15" r="1.6" fill="#2a2440"/>
+          <ellipse cx="16" cy="19" rx="1.6" ry="1.1" fill="#2a2440"/>
+          <path d="M7 9 L5 5 L10 6 Z" fill="#e8b04b"/>
+          <path d="M25 9 L27 5 L22 6 Z" fill="#e8b04b"/>
+        </symbol>
+        <symbol id="emoji-catcry" viewBox="0 0 32 32">
+          <circle cx="16" cy="18" r="11" fill="#c9c2d6"/>
+          <path d="M8 9 L6 3 L12 7 Z" fill="#e0a3b4"/>
+          <path d="M24 9 L26 3 L20 7 Z" fill="#e0a3b4"/>
+          <circle cx="12" cy="17" r="1.5" fill="#2a2440"/>
+          <circle cx="20" cy="17" r="1.5" fill="#2a2440"/>
+          <path d="M13 21 Q16 19 19 21" stroke="#2a2440" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M11 20 l-2 -4" stroke="#7fe0d0" stroke-width="2" stroke-linecap="round"/>
+          <path d="M21 20 l2 -4" stroke="#7fe0d0" stroke-width="2" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="emoji-subway" viewBox="0 0 32 32">
+          <circle cx="15" cy="16" r="10" fill="#e8c9a0"/>
+          <path d="M9 14 l4 -1 M9 17 l4 1" stroke="#2a2440" stroke-width="1.6" stroke-linecap="round"/>
+          <path d="M22 14 l4 -1 M22 17 l4 1" stroke="#2a2440" stroke-width="1.6" stroke-linecap="round"/>
+          <rect x="11" y="19" width="11" height="8" rx="2" fill="#3a3357"/>
+          <rect x="12.5" y="20.5" width="8" height="5" rx="1" fill="#7fe0d0"/>
+        </symbol>
+        <symbol id="emoji-panda" viewBox="0 0 32 32">
+          <circle cx="16" cy="18" r="11" fill="#fffdf6"/>
+          <circle cx="10" cy="7" r="4" fill="#2a2440"/>
+          <circle cx="22" cy="7" r="4" fill="#2a2440"/>
+          <ellipse cx="11" cy="18" rx="3" ry="3.6" fill="#2a2440"/>
+          <ellipse cx="21" cy="18" rx="3" ry="3.6" fill="#2a2440"/>
+          <circle cx="11" cy="18" r="1.4" fill="#fffdf6"/>
+          <circle cx="21" cy="18" r="1.4" fill="#fffdf6"/>
+          <circle cx="16" cy="21" r="1.4" fill="#2a2440"/>
+          <path d="M9 28 l-3 -3 M23 28 l3 -3" stroke="#2a2440" stroke-width="2.4" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="emoji-owl" viewBox="0 0 32 32">
+          <ellipse cx="16" cy="18" rx="11" ry="12" fill="#8a6a4a"/>
+          <ellipse cx="16" cy="18" rx="6" ry="8" fill="#e8c9a0"/>
+          <circle cx="12" cy="15" r="4" fill="#ffd9a0"/>
+          <circle cx="20" cy="15" r="4" fill="#ffd9a0"/>
+          <circle cx="12" cy="15" r="1.8" fill="#2a2440"/>
+          <circle cx="20" cy="15" r="1.8" fill="#2a2440"/>
+          <path d="M16 22 l2 2 l-2 2 l-2 -2 Z" fill="#ffd9a0"/>
+          <path d="M8 10 l-3 -2 M24 10 l3 -2" stroke="#8a6a4a" stroke-width="2" stroke-linecap="round"/>
+        </symbol>
+        <symbol id="emoji-tea" viewBox="0 0 32 32">
+          <circle cx="16" cy="17" r="11" fill="#e0a3b4"/>
+          <path d="M8 9 L6 3 L12 7 Z" fill="#e0a3b4"/>
+          <path d="M24 9 L26 3 L20 7 Z" fill="#e0a3b4"/>
+          <path d="M11 16 Q16 13 21 16" stroke="#2a2440" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <path d="M12 18 Q16 15 20 18" stroke="#2a2440" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+          <rect x="21" y="20" width="8" height="7" rx="2" fill="#b8c7e0"/>
+          <path d="M26 20 q0 -4 3 -4" stroke="#fffdf6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <path d="M28 18 q1 -3 2 -3 M30 15 q1 -2 2 -2" stroke="#fffdf6" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </symbol>
+      </defs>
+    </svg>
+
+    <main class="stage" id="stage">
+
+      <!-- ============ 首页：两个玩法入口 ============ -->
+      <section class="screen active" id="screen-home" data-screen="home">
+        <header class="hero">
+          <div class="hero-badge">解码TA · 第二玩法</div>
+          <h1 class="hero-title">回合制<span>闯关</span></h1>
+          <p class="hero-sub">把你的「相处难题」变成一场骰子鉴定。<br />组一支四人小队，掷出 D20，看骰子说了算。</p>
+          <div class="hero-dice" aria-hidden="true">
+            <svg class="d20-svg"><use href="#d20"/></svg>
+            <span class="hero-dice-num">20</span>
+          </div>
+        </header>
+
+        <div class="home-actions">
+          <button class="btn btn-primary btn-lg" id="btnEnterCreate">进入回合制闯关</button>
+          <button class="btn btn-ghost btn-lg" id="btnOpenAchievements">🏅 成就图鉴</button>
+          <a class="btn btn-ghost btn-lg" href="../index.html">← 返回「解码TA」问答玩法</a>
+          <p class="home-note">两种玩法相互独立：<br />「问答玩法」看 TA 内心 · 「回合制闯关」掷骰打 BOSS。</p>
+        </div>
+
+        <footer class="home-footer">这里练的是眼睛，生活需要你亲自上场。</footer>
+      </section>
+
+      <!-- ============ 创角页：4 角色槽位 ============ -->
+      <section class="screen" id="screen-create" data-screen="create">
+        <div class="topbar">
+          <button class="back-btn" data-back="home" aria-label="返回首页">返回</button>
+          <span class="topbar-title">组建你的小队</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <p class="section-hint">选 4 名队友：每人 2 个强项（+2）、1 个软肋（-2）、1 个技能（+1d4）。<br />16 种预设角色属性固定，也可以点「自建角色」捏一个自己的。</p>
+
+        <div class="custom-entry">
+          <button class="btn btn-ghost" id="btnAddCustom">＋ 自建角色（自己起名、定属性）</button>
+        </div>
+
+        <div class="party-slots" id="partySlots"></div>
+
+        <div class="create-actions">
+          <button class="btn btn-ghost" id="btnRandomParty">🎲 随机生成整队</button>
+          <button class="btn btn-primary btn-lg" id="btnStartBattle">开始闯关</button>
+        </div>
+        <p class="create-note" id="createValidate" role="status"></p>
+      </section>
+
+      <!-- ============ 战斗页 ============ -->
+      <section class="screen" id="screen-battle" data-screen="battle">
+        <div class="topbar">
+          <button class="back-btn" id="btnExitBattle" aria-label="退出闯关">退出</button>
+          <span class="topbar-title" id="battleStageTitle">第 1 / 3 关</span>
+          <button class="speed-toggle" id="btnFastMode" type="button" title="压缩战斗动画演出时间">⚡ 动画</button>
+        </div>
+
+        <!-- 回合指示：当前阶段一眼可见 -->
+        <div class="turn-track" id="turnTrack">
+          <span class="turn-step active" data-phase="attack"><i>1</i> 你的回合 <b>攻击</b></span>
+          <span class="turn-arrow">→</span>
+          <span class="turn-step" data-phase="defend"><i>2</i> BOSS 反击 <b>防御</b></span>
+        </div>
+
+        <!-- 战场舞台：BOSS 与队伍同框 -->
+        <div class="battle-scene scene" id="battleScene">
+          <div class="scene-base"></div>
+          <div class="scene-glow"></div>
+          <div class="scene-floor"></div>
+          <div class="scene-particles" id="sceneParticles"></div>
+
+          <div class="scene-stage">
+            <div class="boss-slot">
+              <div class="boss-aura" aria-hidden="true"></div>
+              <div class="boss-float" id="bossFloat">
+                <div class="boss-art" id="bossAvatar" role="button" tabindex="0" title="点击查看 BOSS 档案"></div>
+              </div>
+              <div class="boss-plate">
+                <div class="boss-name" id="bossName">已读不回怪</div>
+                <div class="boss-tags">
+                  <span class="boss-desc" id="bossDesc"></span>
+                  <button class="inspect-tag" id="btnInspectBoss" type="button">点我看档案 ›</button>
+                </div>
+                <div class="boss-bars">
+                  <div class="bar-label"><span>血量</span><span id="bossHpText">8 / 8</span></div>
+                  <div class="bar hp-bar"><div class="bar-fill" id="bossHpFill"></div></div>
+                  <div class="flame-row" id="flameRow" aria-hidden="true"></div>
+                  <div class="bar-label momentum-label"><span>气势</span><span id="bossMomentumText">0 层 · 当前 DC +0</span></div>
+                  <div class="bar momentum-bar"><div class="bar-fill" id="bossMomentumFill"></div></div>
+                </div>
+                <div class="boss-foot"><span class="boss-special" id="bossSpecial"></span><span class="dc-chip">DC <b id="dcValue">11</b></span></div>
+              </div>
+            </div>
+            <div class="scene-party" id="partyScene" aria-label="小队成员，点击查看属性"></div>
+          </div>
+
+          <div class="scene-log" id="battleLog" aria-live="polite"></div>
+          <div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+        </div>
+
+        <!-- 队伍血量（共享） -->
+        <div class="party-hp-panel" id="partyHpBar">
+          <div class="bar-label"><span>小队血量</span><span id="partyHpText">12 / 12</span></div>
+          <div class="bar hp-bar party-hp"><div class="bar-fill" id="partyHpFill"></div></div>
+          <div class="party-hp-hint">攻击失手才会引来反击 · 防御失败扣 2 血 · 归零则本关重开</div>
+        </div>
+
+        <!-- 结算面板（最近一次结果） -->
+        <div class="result-panel" id="resultPanel">
+          <div class="result-placeholder" id="resultPlaceholder">
+            点击「开始应对」掷骰，看看你这次能不能接住 TA。
+          </div>
+          <div class="result-body" id="resultBody" hidden></div>
+        </div>
+
+        <!-- 当前难题（故事背景 + 本次要求鉴定属性） -->
+        <div class="check-zone">
+          <div class="active-hero">
+            <span class="ah-label">当前主角</span>
+            <span class="ah-name" id="activeHeroName">—</span>
+            <span class="ah-mod" id="activeHeroMod"></span>
+            <span class="relay-badge" id="relayBadge" hidden>接力 +1 就绪</span>
+          </div>
+
+          <div class="task-card" id="taskCard">
+            <div class="task-story" id="taskStory"></div>
+            <div class="task-require">
+              <span class="task-require-label">本次鉴定</span>
+              <span class="task-require-type" id="taskRequireType">—</span>
+              <span class="task-require-dc">DC <b id="taskDc">12</b></span>
+            </div>
+          </div>
+
+          <button class="btn btn-roll" id="btnRoll">
+            <span class="d20-wrap" id="d20Wrap">
+              <svg class="d20-svg" id="d20Svg"><use href="#d20"/></svg>
+            </span>
+            <span class="roll-text">开始应对（掷骰）</span>
+          </button>
+        </div>
+
+        <!-- 队伍栏：切换主角，点卡片看档案 -->
+        <div class="party-bar">
+          <div class="party-bar-title">小队 · 点击切换主角（掷骰的人） · 点姓名看属性</div>
+          <div class="party-roster" id="partyRoster"></div>
+        </div>
+      </section>
+
+      <!-- ============ 通关页 ============ -->
+      <section class="screen" id="screen-victory" data-screen="victory">
+        <div class="victory-hero">
+          <div class="victory-mark" aria-hidden="true">✓</div>
+          <h2>闯关成功</h2>
+          <p class="victory-sub" id="victorySub"></p>
+        </div>
+        <div class="victory-achievements" id="victoryAchievements"></div>
+        <div class="btn-col">
+          <button class="btn btn-primary btn-lg" id="btnReplay">再来一局</button>
+          <button class="btn btn-ghost" id="btnVictoryAchievements">🏅 查看全部成就</button>
+          <button class="btn btn-ghost btn-lg" id="btnVictoryHome">回首页</button>
+        </div>
+      </section>
+
+      <!-- ============ 成就图鉴页（独立收集入口） ============ -->
+      <section class="screen" id="screen-achievements" data-screen="achievements">
+        <div class="topbar">
+          <button class="back-btn" data-back="home" aria-label="返回首页">返回</button>
+          <span class="topbar-title">成就图鉴</span>
+          <span class="topbar-spacer"></span>
+        </div>
+        <p class="ach-intro">每一枚徽章，都是你和 TA 好好相处的一次胜利。</p>
+        <div class="ach-summary" id="achSummary">已解锁 0 / 10</div>
+        <div class="ach-progress" aria-hidden="true"><div id="achProgressFill"></div></div>
+        <div class="ach-grid" id="achGrid"></div>
+        <p class="ach-footnote">成就自动保存在本机浏览器中，换设备或清理缓存后不会同步。</p>
+      </section>
+
+    </main>
+
+    <div class="toast-area" id="toastArea" aria-live="polite"></div>
+  </div>
+
+  <script src="js/art.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>

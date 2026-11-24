@@ -1,0 +1,271 @@
+/* ============================================================
+   解码TA · 回合制闯关 — UI美化版战场舞台化样式
+   作为附加样式表加载，不改动原 style.css 的任何规则。
+   ============================================================ */
+
+.speed-toggle {
+  flex: 0 0 auto; border: 1px solid var(--gold-deep); background: rgba(212,175,106,.08);
+  color: var(--gold); border-radius: var(--r-pill); padding: 6px 11px;
+  font-size: 11px; font-weight: 700; cursor: pointer;
+}
+.speed-toggle.on { background: var(--gold); color: #241a0a; }
+
+/* 回合指示条 */
+.turn-track {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  margin: 2px 0 9px; font-size: 12px;
+}
+.turn-step {
+  display: inline-flex; align-items: center; gap: 5px; padding: 5px 11px;
+  border: 1px solid var(--line); border-radius: var(--r-pill);
+  background: var(--bg-soft); color: var(--ink-faint); transition: .2s var(--ease);
+}
+.turn-step i {
+  font-style: normal; width: 16px; height: 16px; border-radius: 50%;
+  border: 1px solid currentColor; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 800;
+}
+.turn-step b { font-weight: 700; }
+.turn-step.active {
+  color: var(--gold-hi); border-color: var(--gold); background: rgba(212,175,106,.14);
+  box-shadow: 0 0 14px rgba(212,175,106,.2);
+}
+.turn-step.defend.active {
+  color: #ff8f92; border-color: var(--fail); background: rgba(229,72,77,.14);
+  box-shadow: 0 0 14px rgba(229,72,77,.2);
+}
+.turn-arrow { color: var(--ink-faint); font-size: 13px; }
+
+/* 舞台场景 */
+.battle-scene { min-height: 318px; padding: 10px 12px 8px; }
+.scene-floor {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 42%; z-index: 1; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,.45)),
+    repeating-linear-gradient(96deg, rgba(255,255,255,.035) 0 1px, transparent 1px 46px);
+}
+.scene-stage {
+  position: relative; z-index: 4; display: flex; align-items: flex-end; justify-content: space-between;
+  min-height: 252px; gap: 6px;
+}
+.boss-slot { flex: 0 0 60%; display: flex; flex-direction: column; align-items: center; position: relative; }
+.boss-aura {
+  position: absolute; top: 0; left: 50%; width: 180px; height: 160px; transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(212,175,106,.18), transparent 68%); pointer-events: none;
+}
+.boss-float { height: 132px; display: flex; align-items: flex-end; justify-content: center; }
+.boss-art { width: 138px; height: 132px; cursor: pointer; filter: drop-shadow(0 10px 18px rgba(0,0,0,.55)); }
+.boss-art svg { width: 100%; height: 100%; animation: bossBob 3.4s var(--ease) infinite; }
+@keyframes bossBob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.boss-art:hover svg { filter: brightness(1.12); }
+.boss-art.state-hurt svg { animation: bossRecoil .34s var(--ease); filter: saturate(.75); }
+@keyframes bossRecoil {
+  0%,100% { transform: translate(0,0) rotate(0); }
+  30% { transform: translate(-8px, 3px) rotate(-5deg) scale(.96); }
+  65% { transform: translate(5px, -2px) rotate(3deg); }
+}
+.boss-art.state-charge svg { filter: drop-shadow(0 0 12px var(--crit)) saturate(1.2); animation: bossCharge .55s var(--ease); }
+@keyframes bossCharge { 0%,100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.boss-art.state-windup svg { animation: windup .5s var(--ease); }
+@keyframes windup {
+  0%,100% { transform: translateX(0); }
+  60% { transform: translateX(-22px) scale(1.05); filter: drop-shadow(0 0 16px var(--fail)); }
+}
+.boss-art.state-struck svg { animation: bossRecoil .42s var(--ease); }
+
+/* BOSS 铭牌 */
+.boss-plate {
+  width: 100%; margin-top: 4px; padding: 8px 10px;
+  background: rgba(20,16,34,.82); border: 1px solid var(--gold-deep);
+  border-radius: 12px; backdrop-filter: blur(4px);
+}
+.boss-name { font-size: 18px; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+.boss-tags { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.boss-desc { color: var(--ink-soft); font-size: 11px; }
+.inspect-tag {
+  border: 1px solid var(--line); background: transparent; color: var(--gold);
+  border-radius: var(--r-pill); padding: 1px 7px; font-size: 10px; cursor: pointer;
+}
+.boss-bars { margin-top: 5px; }
+.boss-bars .bar-label { font-size: 11px; margin-bottom: 2px; }
+.boss-bars .bar { height: 11px; }
+.flame-row { display: flex; gap: 4px; margin: 5px 0 3px; }
+.flame-row i {
+  width: 9px; height: 12px; display: block; border: 1px solid var(--line);
+  border-radius: 60% 60% 50% 50% / 72% 72% 30% 30%; transform: rotate(45deg);
+  background: rgba(255,255,255,.03);
+}
+.flame-row i.on {
+  background: linear-gradient(180deg, var(--crit-hi), var(--crit));
+  border-color: var(--crit-hi); box-shadow: 0 0 7px rgba(255,158,61,.65);
+}
+.momentum-label { margin-top: 2px; }
+.boss-foot { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: 5px; }
+.boss-special { color: var(--crit-hi); font-size: 10px; }
+.dc-chip { margin-top: 0; padding: 2px 9px; font-size: 11px; }
+
+/* 场景内队伍站位 */
+.scene-party {
+  flex: 0 0 36%; display: flex; align-items: flex-end; justify-content: center;
+  gap: 2px; padding-bottom: 4px;
+}
+.scene-member { width: 25%; position: relative; cursor: pointer; transition: transform .18s var(--ease); }
+.scene-member svg { width: 100%; height: auto; display: block; filter: drop-shadow(0 6px 8px rgba(0,0,0,.5)); opacity: .86; }
+.scene-member:hover svg { opacity: 1; }
+.scene-member.active { transform: translateY(-10px) scale(1.1); z-index: 2; }
+.scene-member.active svg { opacity: 1; filter: drop-shadow(0 0 9px var(--gold)); }
+.scene-member::after {
+  content: ""; position: absolute; left: 12%; right: 12%; bottom: -3px; height: 5px;
+  border-radius: 50%; border: 1px solid transparent;
+}
+.scene-member.active::after { border-color: var(--gold); background: rgba(212,175,106,.22); }
+.scene-member .sm-tag {
+  position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+  font-size: 9px; color: var(--gold); white-space: nowrap;
+}
+.scene-member .sm-charge {
+  position: absolute; right: -1px; bottom: 2px; font-size: 9px; color: var(--good);
+  background: rgba(8,6,18,.75); border-radius: 999px; padding: 0 3px;
+}
+.scene-member.attacking svg { animation: heroLunge .62s var(--ease); }
+@keyframes heroLunge {
+  0%,100% { transform: translateX(0) scale(1.05); }
+  35% { transform: translateX(52px) scale(1.18) rotate(8deg); }
+  55% { transform: translateX(58px) scale(1.12); }
+}
+.scene-member.miss svg { animation: heroMiss .5s var(--ease); }
+@keyframes heroMiss { 0%,100% { transform: none; } 40% { transform: translateX(30px) rotate(-6deg); opacity: .7; } }
+.scene-member.guard svg { animation: guardPulse .55s var(--ease); }
+@keyframes guardPulse {
+  0%,100% { transform: none; }
+  45% { transform: translateY(-6px) scale(1.08); filter: drop-shadow(0 0 12px #7fd6a4); }
+}
+.scene-member.hit svg { animation: heroHit .5s var(--ease); }
+@keyframes heroHit {
+  0%,100% { transform: none; }
+  25% { transform: translate(-4px,2px) rotate(-5deg); filter: saturate(.4); }
+  60% { transform: translate(4px,-1px) rotate(4deg); }
+}
+
+/* 战报 + 特效层 */
+.scene-log {
+  position: absolute; left: 10px; right: 10px; bottom: 6px; z-index: 6;
+  font-size: 10px; line-height: 1.6; color: var(--ink-soft); pointer-events: none;
+  background: rgba(8,6,18,.58); border: 1px solid var(--line-soft);
+  border-radius: 8px; padding: 3px 8px; min-height: 20px;
+}
+.scene-log .log-line { opacity: .85; }
+.scene-log .log-line:first-child { color: var(--gold-hi); opacity: 1; }
+.scene-log .log-line.dmg { color: #ff9e92; }
+.scene-log .log-line.heal { color: var(--good); }
+.fx-layer { position: absolute; inset: 0; z-index: 9; pointer-events: none; overflow: hidden; }
+.fx-float {
+  position: absolute; font-size: 22px; font-weight: 900; text-shadow: 0 2px 8px rgba(0,0,0,.8);
+  animation: floatDamage .95s var(--ease) forwards; white-space: nowrap;
+}
+.fx-float.dmg { color: #ff7a6b; }
+.fx-float.crit { color: var(--crit-hi); font-size: 27px; }
+.fx-float.heal { color: var(--good); }
+.fx-float.info { color: var(--gold-hi); font-size: 15px; }
+@keyframes floatDamage {
+  0% { opacity: 0; transform: translate(-50%, 8px) scale(.7); }
+  20% { opacity: 1; transform: translate(-50%, -6px) scale(1.15); }
+  100% { opacity: 0; transform: translate(-50%, -54px) scale(1); }
+}
+.fx-ring {
+  position: absolute; width: 58px; height: 58px; border-radius: 50%;
+  border: 3px solid var(--crit-hi); transform: translate(-50%,-50%);
+  animation: ringBurst .55s var(--ease) forwards;
+}
+@keyframes ringBurst {
+  from { opacity: 1; width: 12px; height: 12px; }
+  to { opacity: 0; width: 110px; height: 110px; }
+}
+.fx-danger {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 42%, rgba(229,72,77,.42) 100%);
+  animation: dangerFlash .55s var(--ease) forwards;
+}
+@keyframes dangerFlash { 0%,100% { opacity: 0; } 35% { opacity: 1; } }
+.fx-shield {
+  position: absolute; font-size: 30px; color: var(--good); transform: translate(-50%,-50%);
+  filter: drop-shadow(0 0 10px rgba(127,214,164,.8)); animation: shieldPop .6s var(--ease) forwards;
+}
+@keyframes shieldPop {
+  0% { opacity: 0; transform: translate(-50%,-50%) scale(.4); }
+  40% { opacity: 1; transform: translate(-50%,-50%) scale(1.15); }
+  100% { opacity: 0; transform: translate(-50%,-70%) scale(1); }
+}
+
+/* 血条受击白闪 */
+.hp-bar.hp-flash .bar-fill::before {
+  content: ""; position: absolute; inset: 0; background: #fff; opacity: 0;
+  animation: hpFlash .32s var(--ease);
+}
+@keyframes hpFlash { 0% { opacity: .85; } 100% { opacity: 0; } }
+
+/* 接力标记 */
+.relay-badge {
+  font-size: 10px; color: #241a0a; background: var(--gold-hi);
+  border-radius: var(--r-pill); padding: 2px 7px; font-weight: 800;
+}
+.relay-badge[hidden] { display: none; }
+
+/* 队伍卡：充能点 + 档案入口 */
+.charge-dots { display: inline-flex; gap: 3px; margin-left: 4px; vertical-align: middle; }
+.charge-dots i {
+  width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--gold-deep); display: block;
+}
+.charge-dots i.on { background: var(--gold); box-shadow: 0 0 5px rgba(212,175,106,.6); }
+.member-name { cursor: pointer; }
+.member-name:hover { color: var(--gold-hi); }
+.member-sprite .party-svg { width: 38px; height: 44px; }
+
+/* 角色档案弹窗 */
+.profile-overlay {
+  position: fixed; inset: 0; z-index: 120; display: flex; align-items: center; justify-content: center;
+  background: rgba(8,6,18,.8); backdrop-filter: blur(4px); padding: 16px; animation: fade .2s var(--ease);
+}
+.profile-card {
+  width: min(94vw, 420px); max-height: 88vh; overflow-y: auto;
+  background: linear-gradient(180deg, #26203d, #191430);
+  border: 1px solid var(--gold-deep); border-radius: var(--r-lg);
+  box-shadow: 0 24px 60px rgba(0,0,0,.65); padding: 16px;
+  animation: modalIn .28s var(--ease);
+}
+.profile-head { display: flex; gap: 12px; align-items: center; }
+.profile-art {
+  flex: 0 0 84px; width: 84px; height: 84px; border-radius: 18px;
+  background: rgba(255,255,255,.04); border: 1px solid var(--line);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+}
+.profile-art svg { width: 100%; height: 100%; }
+.profile-title { flex: 1; min-width: 0; }
+.profile-name { font-size: 20px; font-weight: 800; }
+.profile-sub { font-size: 12px; color: var(--ink-soft); margin-top: 3px; line-height: 1.6; }
+.profile-close {
+  align-self: flex-start; border: 1px solid var(--line); background: transparent; color: var(--ink-soft);
+  border-radius: 50%; width: 28px; height: 28px; font-size: 16px; cursor: pointer;
+}
+.profile-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.profile-stat {
+  background: rgba(255,255,255,.04); border: 1px solid var(--line);
+  border-radius: 10px; padding: 8px 10px;
+}
+.profile-stat span { display: block; font-size: 10px; color: var(--ink-faint); }
+.profile-stat b { display: block; font-size: 14px; color: var(--gold-hi); margin-top: 2px; }
+.profile-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.profile-note {
+  margin-top: 12px; font-size: 12px; color: var(--ink-soft); line-height: 1.7;
+  border-left: 3px solid var(--gold-deep); padding-left: 10px;
+}
+.profile-hint { text-align: center; font-size: 11px; color: var(--ink-faint); margin-top: 12px; }
+
+/* 快进模式：压缩所有演出动画 */
+.fast-mode .battle-scene *,
+.fast-mode .boss-art *,
+.fast-mode .scene-member * { animation-duration: .01ms !important; }
+.fast-mode .scene-log { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .scene-log, .fx-layer { animation: none !important; }
+}

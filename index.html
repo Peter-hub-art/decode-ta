@@ -42,9 +42,12 @@
             <span class="daily-date" id="dailyDate"></span>
           </div>
           <div class="daily-body">
-            <div class="daily-name" id="dailyName"></div>
-            <div class="daily-intro" id="dailyIntro"></div>
-            <div class="daily-quote" id="dailyQuote"></div>
+            <div class="daily-art" id="dailyArt" aria-hidden="true"></div>
+            <div class="daily-text">
+              <div class="daily-name" id="dailyName"></div>
+              <div class="daily-intro" id="dailyIntro"></div>
+              <div class="daily-quote" id="dailyQuote"></div>
+            </div>
           </div>
         </div>
 
@@ -54,7 +57,7 @@
             <button class="btn btn-ghost" id="btnManual">写我的使用说明书</button>
             <button class="btn btn-ghost" id="btnCollection">我的收藏册</button>
           </div>
-          <a class="btn btn-mode btn-lg" href="新版回合制/index.html">🎲 回合制闯关</a>
+          <a class="btn btn-mode btn-lg" href="回合制/index.html">🎲 回合制闯关</a>
         </div>
 
         <footer class="home-footer">这里练的是眼睛，生活需要你亲自上场。</footer>
@@ -77,10 +80,15 @@
                 <div class="back-deco" aria-hidden="true"></div>
                 <span class="back-label">人物卡</span>
               </div>
-              <div class="flip-face flip-front">
-                <div class="card-kicker">你遇到的人</div>
-                <div class="persona-name" id="drawPersonaName"></div>
-                <div class="tag-row" id="drawPersonaTags"></div>
+              <div class="flip-face flip-front persona-front">
+                <div class="persona-top">
+                  <div class="persona-art" id="drawPersonaArt" aria-hidden="true"></div>
+                  <div class="persona-meta">
+                    <div class="card-kicker">你遇到的人</div>
+                    <div class="persona-name" id="drawPersonaName"></div>
+                    <div class="tag-row" id="drawPersonaTags"></div>
+                  </div>
+                </div>
                 <p class="persona-intro" id="drawPersonaIntro"></p>
                 <div class="tone-chip" id="drawPersonaTone"></div>
               </div>
@@ -235,6 +243,7 @@
   </div>
 
   <script src="js/data.js"></script>
+  <script src="js/art.js"></script>
   <script src="js/game.js"></script>
 </body>
 </html>

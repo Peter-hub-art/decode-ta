@@ -323,9 +323,12 @@
     var el = document.createElement('div');
     if (isAchievement) {
       el.className = 'toast toast-ach';
-      el.innerHTML = '<div class="toast-title">成 就 解 锁</div>' +
+      el.innerHTML = (window.DecodeArt
+        ? '<span class="toast-ach-art">' + window.DecodeArt.achievement(ach && ach.id) + '</span>'
+        : '') +
+        '<span><div class="toast-title">成 就 解 锁</div>' +
         '<div class="toast-name">' + esc(ach && ach.name || '新成就') + '</div>' +
-        '<div class="toast-desc">' + esc(ach && ach.desc || '') + '</div>';
+        '<div class="toast-desc">' + esc(ach && ach.desc || '') + '</div></span>';
     } else {
       el.className = 'toast';
       el.innerHTML = '<div class="toast-msg">' + esc(msg) + '</div>';
@@ -380,6 +383,8 @@
     setText('#dailyName', persona.name);
     setText('#dailyIntro', persona.intro);
     setText('#dailyQuote', last.quote || '');
+    var art = $('#dailyArt');
+    if (art && window.DecodeArt) art.innerHTML = window.DecodeArt.persona(persona.id, 'art-c' + (Number(persona.id) % 6));
     var card = $('#dailyCard');
     if (card) card.hidden = false;
   }
@@ -401,6 +406,8 @@
   function fillPersonaCard() {
     setText('#drawPersonaName', state.persona.name);
     setText('#drawPersonaIntro', state.persona.intro);
+    var art = $('#drawPersonaArt');
+    if (art && window.DecodeArt) art.innerHTML = window.DecodeArt.persona(state.persona.id, 'art-c' + (Number(state.persona.id) % 6));
     var tone = state.toneRules[state.persona.tone] || {};
     setText('#drawPersonaTone', '语气：' + (tone.label || state.persona.tone));
     var tags = $('#drawPersonaTags');
@@ -994,8 +1001,11 @@
     var unlocked = S.getJSON('achievements', []);
     box.innerHTML = state.achievements.map(function (a, i) {
       var got = unlocked.indexOf(String(a.id)) !== -1;
+      var badge = window.DecodeArt
+        ? '<div class="ach-art">' + window.DecodeArt.achievement(a.id) + '</div>'
+        : '<div class="ach-icon">' + (i + 1) + '</div>';
       return '<div class="ach-item' + (got ? '' : ' locked') + '">' +
-               '<div class="ach-icon">' + (i + 1) + '</div>' +
+               badge +
                '<div><div class="ach-name">' + esc(a.name) + '</div>' +
                  '<div class="ach-desc">' + esc(a.desc) + '</div>' +
                  (a.reward ? '<div class="ach-reward">奖励：' + esc(a.reward) + '</div>' : '') +
@@ -1012,17 +1022,21 @@
     box.innerHTML = state.personas.map(function (p) {
       var info = codex[p.id];
       var unlocked = !!(info && (info.trigger || info.desire));
-      var head = '<div class="codex-head"><span class="codex-id">NO.' + esc(p.id) + '</span>' +
-                 '<span class="codex-name">' + esc(unlocked ? p.name : '？？？') + '</span></div>' +
-                 '<div class="codex-tags">' + (p.tags || []).map(esc).join(' / ') + '</div>';
+      var art = window.DecodeArt
+        ? '<div class="codex-art art-c' + (Number(p.id) % 6) + '">' + window.DecodeArt.persona(p.id) + '</div>'
+        : '';
+      var head = '<div class="codex-body">' +
+        '<div class="codex-head"><span class="codex-id">NO.' + esc(p.id) + '</span>' +
+        '<span class="codex-name">' + esc(unlocked ? p.name : '？？？') + '</span></div>' +
+        '<div class="codex-tags">' + (p.tags || []).map(esc).join(' / ') + '</div>';
       if (unlocked) {
-        return '<div class="codex-card">' + head +
+        return '<div class="codex-card">' + art + head +
           '<div class="codex-row trigger"><b>雷区：</b>' + esc(info.trigger || '—') + '</div>' +
           '<div class="codex-row"><b>渴望：</b>' + esc(info.desire || '—') + '</div>' +
-        '</div>';
+        '</div></div>';
       }
-      return '<div class="codex-card codex-locked">' + head +
-        '<div class="codex-hint">继续游玩解锁</div></div>';
+      return '<div class="codex-card codex-locked">' + art + head +
+        '<div class="codex-hint">继续游玩解锁</div></div></div>';
     }).join('');
   }
 
